@@ -1,4 +1,6 @@
+
 <!-- Set Villain -->
+<h5 class="normalText">Select Encounter</h5>
 <dx-select-box *ngIf="!settingsReady"
     [items]="villains" 
     displayExpr="text" 
@@ -9,9 +11,11 @@
 <ng-container *ngIf="villain != undefined">
     <!-- Villain Phase -->
     <dx-tabs 
-        [dataSource]="villain.phases"
-        [selectedItem]="villain.phases[0]"
-        (onSelectionChanged)="selectPhase($event.addedItems)">
+        [dataSource]="villain.villain_phases"
+        keyExpr="octgn_id"
+        displayExpr="stage"
+        [selectedItem]="villain.villain_phases[0]"
+        (onItemClick)="selectPhase($event.itemData)">
     </dx-tabs>
     <ng-container *ngIf="villainPhase != undefined">
         <div class="row" style="margin-top: 2rem;">
@@ -38,9 +42,9 @@
             </div>
             <!-- Main Scheme -->
             <div class="col">
-                <h4 class="normalText">{{villain.schemesMain[schemePhase].text}} </h4>
-                <h5 *ngIf="accelToken == 0"class="normalText">{{currentScheme}} / {{villain.schemesMain[schemePhase].maxEnd}}</h5>
-                <h5 *ngIf="accelToken != 0"class="normalText">{{currentScheme}} / {{villain.schemesMain[schemePhase].maxEnd}} (Accelerations Tokens: {{accelToken}}) </h5>
+                <h4 class="normalText">{{villain.main_scheme[schemePhase].real_name}} </h4>
+                <h5 *ngIf="accelToken == 0"class="normalText">{{currentScheme}} / {{villain.main_scheme[schemePhase].maxEnd}}</h5>
+                <h5 *ngIf="accelToken != 0"class="normalText">{{currentScheme}} / {{villain.main_scheme[schemePhase].maxEnd}} (Accelerations Tokens: {{accelToken}}) </h5>
                 <div *ngIf="settingsReady">
                     <dx-button style="margin-top: 1rem;" (onClick)="advancePhaseOne()" text="Phase 1"> </dx-button>
                     <dx-button style="margin-top: 1rem;" (onClick)="updateMainScheme(1)" icon="minus"> </dx-button>
@@ -48,7 +52,7 @@
                     <dx-button style="margin-top: 1rem;" (onClick)="acceleratePlan()" text="Accelerate"> </dx-button>
                     <dx-button style="margin-top: 1rem;" 
                     *ngIf="
-                    (currentScheme >= villain.schemesMain[schemePhase].maxEnd)" 
+                    (currentScheme >= villain.main_scheme[schemePhase].maxEnd)" 
                         (onClick)="setMainSchemeUI(schemePhase + 1)" icon="greater"> 
                     </dx-button>
                 </div>
@@ -58,7 +62,7 @@
                             <div class="hpBorder">
                                 <div [ngClass]="{
                                     schemeCenter:circle.state == true, 
-                                    schemeToAdvance:circle.state == false && villain.schemesMain[schemePhase].toAdvance >= circle.index
+                                    schemeToAdvance:circle.state == false && villain.main_scheme[schemePhase].toAdvance >= circle.index
                                 }"></div>
                             </div>
                         </td>

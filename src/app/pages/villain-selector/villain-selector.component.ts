@@ -12,7 +12,7 @@ export class VillainSelectorComponent implements OnInit {
 
   settingsReady = false;
 
-  villains: any;
+  villains: any = [];
   villain: any;
   villainPhase: any;
 
@@ -36,13 +36,68 @@ export class VillainSelectorComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.villains = this.vService.villains;
-    this.modularSets = this.vService.modularSets;
+    this.vService.getEncounterCardsData().subscribe((res: any) => {
+      let packs: any[] = [];
+      let typeCode: any[] = [];
+      res.forEach((card: any) => {
+        if (typeCode.find((x: any) => { x == card.type_code }) == undefined) typeCode.push(card.type_code)
+        if (card.type_code == 'villain' || card.type_code == 'main_scheme' || card.type_code == 'minion') {
+          if (packs[card.card_set_code] == undefined) packs[card.card_set_code] = [];
+          packs[card.card_set_code].text = card.card_set_name;
+          packs[card.card_set_code].id = card.card_set_code;
+
+          if (card.type_code == 'villain') {
+            if (packs[card.card_set_code].villain_phases == undefined) packs[card.card_set_code].villain_phases = [];
+            packs[card.card_set_code].villain_phases.push(card)
+          }
+
+          if (card.type_code == 'main_scheme') {
+            if (packs[card.card_set_code].main_scheme == undefined) packs[card.card_set_code].main_scheme = [];
+            packs[card.card_set_code].main_scheme.push(card)
+          }
+
+          if (card.type_code == 'minion') {
+            if (packs[card.card_set_code].minion == undefined) packs[card.card_set_code].minion = [];
+            packs[card.card_set_code].minion.push(card)
+          }
+
+        }
+      });
+
+      let mainSets: any[] = [];
+      let modularSets: any[] = [];
+      for (const key in packs) {
+        const pack = packs[key];
+        if (pack.main_scheme != undefined) {
+          if (pack.villain_phases) {
+            pack.villain_phases.forEach((villain_phase: any) => {
+              villain_phase.card_text = villain_phase.text;
+              villain_phase.text = villain_phase.name + ' ' + villain_phase.stage;
+            });
+          }
+          mainSets.push(pack);
+        }
+        else
+          modularSets.push(pack);
+      }
+
+      // typeCode = [...new Set(typeCode)];
+      // console.log(typeCode);
+
+      console.log(mainSets);
+
+      this.villains = mainSets;
+      this.modularSets = modularSets;
+
+    });
+
+    // this.modularSets = this.vService.modularSets;
+
+    //Invoked in playersComponent when selecting players quantity
     this.vService.invokePlayersInput.subscribe((players: any) => {
       this.players = players;
       if (this.villain != undefined) {
-        // this.selectVillain(this.villain.id)
-        this.selectPhase([this.villainPhase]);
+        this.selectPhase(this.villainPhase);
         this.setMainSchemeUI(0);
 
         this.plansInPlay.forEach((plan: any) => {
@@ -59,10 +114,10 @@ export class VillainSelectorComponent implements OnInit {
 
   selectVillain(e: any) {
     this.villain = this.villains.find((x: any) => x.id == e)
-    this.villainPhase = this.villain.phases[0];
-    this.villainPhase['currentHP'] = this.villainPhase.hp;
-    this.currentScheme = this.villain.schemesMain[0].init;
-    this.villainPhase.currentHP = this.villainPhase.maxHP = (this.villainPhase.hp * this.players);
+    this.villainPhase = this.villain.villain_phases[0];
+    this.villainPhase['currentHP'] = this.villainPhase.health;
+    this.currentScheme = this.villain.main_scheme[0].init;
+    this.villainPhase.currentHP = this.villainPhase.maxHP = (this.villainPhase.health * this.players);
 
     this.setLifepointsUI();
     this.setMainSchemeUI(0);
@@ -71,14 +126,15 @@ export class VillainSelectorComponent implements OnInit {
 
     this.plansInPlay = [];
     this.planList = [];
-    this.villain.schemesSide.forEach((scheme: any) => {
-      this.planList.push(scheme)
-    });
+    // this.villain.schemesSide.forEach((scheme: any) => {
+    //   this.planList.push(scheme)
+    // });
   }
 
-  selectPhase(e: any) {
-    this.villainPhase = e[0];
-    this.villainPhase.currentHP = this.villainPhase.maxHP = (this.villainPhase.hp * this.players);
+  selectPhase(villainPhase: any) {
+    console.log(villainPhase)
+    this.villainPhase = villainPhase;
+    this.villainPhase.currentHP = this.villainPhase.maxHP = (villainPhase.health * this.players);
     this.setLifepointsUI();
   }
 
@@ -146,14 +202,14 @@ export class VillainSelectorComponent implements OnInit {
   }
 
   advancePhaseOne() {
-    this.updateMainScheme(-(this.villain.schemesMain[this.schemePhase].toAdvance - this.currentScheme));
+    this.updateMainScheme(-(this.villain.main_scheme[this.schemePhase].toAdvance - this.currentScheme));
   }
 
   updateMainScheme(qty: any) {
     this.currentScheme = this.currentScheme - qty;
     if (this.currentScheme < 0) this.currentScheme = 0;
 
-    this.villain.schemesMain[this.schemePhase].toAdvance = this.accelToken + this.currentScheme + (this.villain.schemesMain[this.schemePhase].step * this.players);
+    this.villain.main_scheme[this.schemePhase].toAdvance = this.accelToken + this.currentScheme + (this.villain.main_scheme[this.schemePhase].escalation_threat * this.players);
 
     this.mainSchemeUI.forEach(row => {
       row.forEach(circles => {
@@ -207,7 +263,7 @@ export class VillainSelectorComponent implements OnInit {
   }
 
   setMainSchemeUI(index: number) {
-    if (index >= this.villain.schemesMain.length) {
+    if (index >= this.villain.main_scheme.length) {
       this.resetSettings();
     }
     else {
@@ -217,11 +273,11 @@ export class VillainSelectorComponent implements OnInit {
       let qty = 1;
 
 
-      this.currentScheme = this.villain.schemesMain[index].init;
+      this.currentScheme = this.villain.main_scheme[index].base_threat;
 
-      this.villain.schemesMain[index].toAdvance = this.accelToken + this.currentScheme + (this.villain.schemesMain[index].step * this.players);
-      this.villain.schemesMain[index].maxEnd = this.villain.schemesMain[index].end * this.players;
-      for (let i = 1; i <= this.villain.schemesMain[index].maxEnd; i++) {
+      this.villain.main_scheme[index].toAdvance = this.accelToken + this.currentScheme + (this.villain.main_scheme[index].escalation_threat * this.players);
+      this.villain.main_scheme[index].maxEnd = this.villain.main_scheme[index].threat * this.players;
+      for (let i = 1; i <= this.villain.main_scheme[index].maxEnd; i++) {
         if (rows[rowIndex] == undefined) rows[rowIndex] = [];
         rows[rowIndex].push({ state: false, index: i });
         if (i % 10 == 0) {

@@ -1,0 +1,66 @@
+.hpBorder {
+    display: flex;
+    background-color: #000;
+    width: 50px;
+    height: 50px;
+    border-radius: 2rem;
+}
+
+.hpCenter {
+    background-color: #ff0000;
+    width: 75%;
+    height: 75%;
+    border-radius: 2rem;
+    margin-left: 12%;
+    margin-top: 12%;
+}
+
+.hpOverflow {
+    background-color: #a00000;
+    width: 75%;
+    height: 75%;
+    border-radius: 2rem;
+    margin-left: 12%;
+    margin-top: 12%;
+}
+
+.schemeCenter {
+    background-color: #ffdd00;
+    width: 75%;
+    height: 75%;
+    border-radius: 2rem;
+    margin-left: 12%;
+    margin-top: 12%;
+}
+
+.schemeToAdvance {
+    background-color: #7a6a00;
+    width: 75%;
+    height: 75%;
+    border-radius: 2rem;
+    margin-left: 12%;
+    margin-top: 12%;
+}
+
+.schemeOverflow {
+    background-color: #cb8300;
+    width: 75%;
+    height: 75%;
+    border-radius: 2rem;
+    margin-left: 12%;
+    margin-top: 12%;
+}
+
+.boton {
+    height: 30px;
+    width: 60px;
+}
+
+.normalText {
+    // font-family: 'Exo 2';
+    font-weight: bold;
+}
+
+.schemeDiv {
+    margin-top: 1rem;
+}

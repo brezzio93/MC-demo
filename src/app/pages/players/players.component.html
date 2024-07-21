@@ -1,0 +1,11 @@
+
+<h4 class="normalText">Select Players</h4>
+<dx-select-box
+    [items]="playersOptions" 
+    displayExpr="text" 
+    valueExpr="text" 
+    (onValueChanged)="selectPlayers($event.value)"
+></dx-select-box>
+<div style="margin-top: 2rem;">
+    <app-villain-selector *ngIf="playersInput > 0" [players]="playersInput"></app-villain-selector>
+</div>

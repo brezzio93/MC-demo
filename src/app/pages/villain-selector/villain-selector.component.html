@@ -2,9 +2,11 @@
 <!-- Set Villain -->
 <h5 class="normalText">Select Encounter</h5>
 <dx-select-box *ngIf="!settingsReady"
-    [items]="villains" 
-    displayExpr="text" 
-    valueExpr="id" 
+    [items]="villains"
+    displayExpr="text"
+    valueExpr="card_set_code"
+    [searchEnabled]="true"
+    [searchMode]="'contains'"
     (onValueChanged)="selectVillain($event.value)">
 </dx-select-box> 
 
@@ -12,9 +14,8 @@
     <!-- Villain Phase -->
     <dx-tabs 
         [dataSource]="villain.villain_phases"
-        keyExpr="octgn_id"
+        keyExpr="code"
         displayExpr="stage"
-        [selectedItem]="villain.villain_phases[0]"
         (onItemClick)="selectPhase($event.itemData)">
     </dx-tabs>
     <ng-container *ngIf="villainPhase != undefined">
@@ -42,7 +43,7 @@
             </div>
             <!-- Main Scheme -->
             <div class="col">
-                <h4 class="normalText">{{villain.main_scheme[schemePhase].real_name}} </h4>
+                <h4 class="normalText">{{villain.main_scheme[schemePhase].name}} </h4>
                 <h5 *ngIf="accelToken == 0"class="normalText">{{currentScheme}} / {{villain.main_scheme[schemePhase].maxEnd}}</h5>
                 <h5 *ngIf="accelToken != 0"class="normalText">{{currentScheme}} / {{villain.main_scheme[schemePhase].maxEnd}} (Accelerations Tokens: {{accelToken}}) </h5>
                 <div *ngIf="settingsReady">
@@ -77,12 +78,12 @@
                 <!-- Side Schemes -->
                 <ng-container *ngFor="let plan of plansInPlay">
                     <div class="schemeDiv">
-                        <h4 class="normalText"> {{plan.text}} </h4>
+                        <h4 class="normalText"> {{plan.name}} </h4>
                         <h5 class="normalText">{{plan.current}} / {{plan.end}} </h5>
                         <div>
                             <dx-button style="margin-top: 1rem;" *ngIf="settingsReady" (onClick)="updateSideScheme(1, plan)" icon="minus"> </dx-button>
                             <dx-button style="margin-top: 1rem;" *ngIf="settingsReady" (onClick)="updateSideScheme(-1, plan)" icon="plus"> </dx-button>
-                            <dx-button style="margin-top: 1rem;" *ngIf="plan.current == 0 || !settingsReady"  (onClick)="removePlan(plan.id)" icon="remove"> </dx-button>
+                            <dx-button style="margin-top: 1rem;" *ngIf="plan.current == 0 || !settingsReady"  (onClick)="removeSideScheme(plan.code)" icon="remove"> </dx-button>
                         </div>
                         <table>
                             <tr *ngFor="let row of plan.planUI;">
@@ -95,7 +96,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        </table>                    
+                        </table>
                     </div>
                 </ng-container>
             </div>
@@ -103,22 +104,45 @@
                 <!-- Set Modular Sets -->
                 <div *ngIf="!settingsReady">
                     <h2 class="normalText">Select Modular Sets</h2>
-                    <dx-list
+                    <dx-tag-box
                         [dataSource]="modularSets"
-                        [selectionMode]="modularSetsSelection"
-                        [showSelectionControls]="true"
-                        [selectByClick]="true"
-                        (onSelectionChanged)="selectScheme($event)"
-                    ></dx-list>
+                        valueExpr="card_set_code"
+                        displayExpr="text"
+                        applyValueMode="useButtons"
+                        [multiline]="true"
+                        [searchEnabled]="true"
+                        [showSelectionControls]="true" 
+                        (onValueChanged)="selectScheme($event)">
+                    </dx-tag-box>
                 </div>
                 <!-- Put scheme on play -->
                 <h2 class="normalText">Put scheme on Play</h2>
                 <dx-select-box
-                    [items]="planList" 
-                    displayExpr="text" 
-                    valueExpr="id" 
-                    (onValueChanged)="putPlanInPlay($event.value)">
+                    [items]="planList"
+                    displayExpr="name"
+                    valueExpr="code"
+                    [searchEnabled]="true"
+                    [searchMode]="'contains'"
+                    (onValueChanged)="putSideSchemeInPlay($event)">
                 </dx-select-box>
+                <!-- <dx-tag-box
+                    [dataSource]="planList"
+                    displayExpr="name"
+                    valueExpr="code"
+                    applyValueMode="useButtons"
+                    [multiline]="true"
+                    [searchEnabled]="true"
+                    [searchMode]="'contains'"
+                    [showSelectionControls]="true" 
+                    [hideSelectedItems]="true"
+                    tagTemplate="customTag"
+                    (onValueChanged)="putSideSchemeInPlay($event)">
+                    <div *dxTemplate="let product of 'customTag'">
+                        <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                        <span>{{product.name}}</span>
+                        </div>
+                    </div>
+                </dx-tag-box> -->
 
                 <!-- Start Game -->
                 <dx-button *ngIf="!settingsReady"

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DxDataGridModule, DxFormModule, DxSelectBoxModule, DxProgressBarModule, DxToolbarModule, DxTabsModule, DxListModule, DxButtonModule} from 'devextreme-angular';
+import { DxDataGridModule, DxFormModule, DxSelectBoxModule, DxProgressBarModule, DxTabsModule, DxListModule, DxButtonModule, DxTagBoxModule, } from 'devextreme-angular';
 
 import { LoginFormComponent, ResetPasswordFormComponent, CreateAccountFormComponent, ChangePasswordFormComponent } from './shared/components';
 import { HomeComponent } from './pages/home/home.component';
@@ -53,6 +53,7 @@ const routes: Routes = [
     DxTabsModule,
     DxListModule,
     DxButtonModule,
+    DxTagBoxModule,
   ],
   providers: [AuthGuardService],
   exports: [RouterModule],

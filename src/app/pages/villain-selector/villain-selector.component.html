@@ -117,15 +117,7 @@
                 </div>
                 <!-- Put scheme on play -->
                 <h2 class="normalText">Put scheme on Play</h2>
-                <dx-select-box
-                    [items]="planList"
-                    displayExpr="name"
-                    valueExpr="code"
-                    [searchEnabled]="true"
-                    [searchMode]="'contains'"
-                    (onValueChanged)="putSideSchemeInPlay($event)">
-                </dx-select-box>
-                <!-- <dx-tag-box
+                <dx-tag-box
                     [dataSource]="planList"
                     displayExpr="name"
                     valueExpr="code"
@@ -134,15 +126,15 @@
                     [searchEnabled]="true"
                     [searchMode]="'contains'"
                     [showSelectionControls]="true" 
-                    [hideSelectedItems]="true"
                     tagTemplate="customTag"
+                    [hideSelectedItems]="true"
                     (onValueChanged)="putSideSchemeInPlay($event)">
                     <div *dxTemplate="let product of 'customTag'">
                         <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
                         <span>{{product.name}}</span>
                         </div>
                     </div>
-                </dx-tag-box> -->
+                </dx-tag-box>
 
                 <!-- Start Game -->
                 <dx-button *ngIf="!settingsReady"

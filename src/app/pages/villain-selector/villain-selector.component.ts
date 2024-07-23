@@ -172,39 +172,44 @@ export class VillainSelectorComponent implements OnInit {
 
   putSideSchemeInPlay(planIDs: any) {
     console.log(planIDs)
-
     //TagBox version
-    // planIDs.value.forEach((planID: any) => {
-    //   let plan = this.planList.find((x: any) => x.code == planID);
+    planIDs.value.forEach((planID: any) => {
+      let plan = this.planList.find((x: any) => x.code == planID);
 
-    //   //Set initial scheme
-    //   let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
-    //   plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
+      //Set initial scheme
+      let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
+      plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
 
-    //   let indexInPlay = this.plansInPlay.findIndex((x: any) => x.code == planID);
-    //   //set UI only if scheme is not already in game
-    //   if (indexInPlay == -1) {
-    //     this.plansInPlay.push(plan);
-    //     this.plansInPlay[this.plansInPlay.length - 1].planUI = this.setSideSchemeUI(this.plansInPlay[this.plansInPlay.length - 1]);
-    //   }
-    // })
+      let indexInPlay = this.plansInPlay.findIndex((x: any) => x.code == planID);
+      //set UI only if scheme is not already in game
+      if (indexInPlay == -1) {
+        this.plansInPlay.push(plan);
+        this.plansInPlay[this.plansInPlay.length - 1].planUI = this.setSideSchemeUI(this.plansInPlay[this.plansInPlay.length - 1]);
+      }
 
-    //SelectBox version
-    let planID = planIDs.value;
-    let plan = this.planList.find((x: any) => x.code == planID);
+      let indexPlanList = this.planList.findIndex((x: any) => x.code == planID);
+      this.planList.splice(indexPlanList, 1);
 
-    let index = this.planList.findIndex((x: any) => x.code == planID);
-    this.planList.splice(index, 1);
-    console.log(plan)
+    })
 
-    //Set initial scheme
-    let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
-    plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
-    this.plansInPlay.push(plan);
+    console.log(this.planList)
 
-    this.plansInPlay.forEach((inPlay: any) => {
-      inPlay.planUI = this.setSideSchemeUI(inPlay);
-    });
+    // //SelectBox version
+    // let planID = planIDs.value;
+    // let plan = this.planList.find((x: any) => x.code == planID);
+
+    // let index = this.planList.findIndex((x: any) => x.code == planID);
+    // this.planList.splice(index, 1);
+    // console.log(plan)
+
+    // //Set initial scheme
+    // let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
+    // plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
+    // this.plansInPlay.push(plan);
+
+    // this.plansInPlay.forEach((inPlay: any) => {
+    //   inPlay.planUI = this.setSideSchemeUI(inPlay);
+    // });
 
   }
 
@@ -213,6 +218,7 @@ export class VillainSelectorComponent implements OnInit {
     let plan = this.plansInPlay.find((x: any) => x.code == code);
     this.plansInPlay.splice(index, 1);
     this.planList.push(plan);
+    console.log(this.planList);
   }
 
   selectScheme(e: any) {

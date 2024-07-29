@@ -1,11 +1,49 @@
+<ng-container *ngIf="!shared.settingsReady">
+    <h5 class="normalText">Select Players</h5>
+    <dx-select-box [items]="playersOptions" displayExpr="text" valueExpr="text"
+        (onValueChanged)="selectPlayers($event.value)"></dx-select-box>
+</ng-container>
+<ng-container *ngIf="playersInput > 2">
 
-<h5 class="normalText">Select Players</h5>
-<dx-select-box
-    [items]="playersOptions" 
-    displayExpr="text" 
-    valueExpr="text" 
-    (onValueChanged)="selectPlayers($event.value)"
-></dx-select-box>
+</ng-container>
+
 <div style="margin-top: 2rem;">
-    <app-villain-selector *ngIf="playersInput > 0" [players]="playersInput"></app-villain-selector>
+    <app-villain-selector [players]="playersInput"></app-villain-selector>
+</div>
+
+<div class="row" style="margin-top: 2rem;">
+    <div class="col" *ngFor="let item of  [].constructor(playersInput); index as i">
+        <!-- Hero Select -->
+        <ng-container *ngIf="!shared.settingsReady">
+            <h5 class="normalText">Select Hero</h5>
+            <dx-select-box [items]="shared.heroes" displayExpr="text" valueExpr="card_set_code" [searchEnabled]="true"
+                [searchMode]="'contains'" (onValueChanged)="selectHero($event.value, i)"></dx-select-box>
+        </ng-container>
+        <!-- Hero Details -->
+        <ng-container *ngIf="players[i]">
+            <div [ngStyle]="{'background':players[i]?.colors}">
+                <!-- HERO HP -->
+                <div class="col">
+                    <h5 class="heroName">{{players[i]?.text}}</h5>
+                    <h5 class="heroName">{{players[i]?.currentHP}} / {{players[i]?.maxHP}} HP</h5>
+                    <div *ngIf="shared.settingsReady">
+                        <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,1)" icon="minus"> </dx-button>
+                        <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,-1)" icon="plus"> </dx-button>
+                    </div>
+                    <table>
+                        <tr *ngFor="let row of lifePointsUI[i];">
+                            <td *ngFor="let circle of row">
+                                <div class="circleBg">
+                                    <div [ngClass]="{
+                                        hpCenter:circle.state == true,
+                                        hpOverflow: (players[i]?.currentHP > players[i]?.maxHP) && circle.index > players[i]?.maxHP
+                                    }"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </ng-container>
+    </div>
 </div>

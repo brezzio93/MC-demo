@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SingleMultipleAllOrNone } from 'devextreme/common';
-import { VillainsService } from 'src/app/shared/services/villains.service';
+import { DataService } from 'src/app/shared/services/data.service';
 
 @Component({
   selector: 'app-villain-selector',
@@ -12,11 +12,9 @@ export class VillainSelectorComponent implements OnInit {
 
   settingsReady = false;
 
-  villains: any = [];
   villain: any;
   villainPhase: any;
 
-  modularSets: any;
   modularSetsSelection: SingleMultipleAllOrNone = 'single';
 
   currentScheme = 0;
@@ -32,77 +30,12 @@ export class VillainSelectorComponent implements OnInit {
   @Input() players: number = 0;
 
   constructor(
-    private vService: VillainsService,
+    public shared: DataService,
   ) { }
 
   ngOnInit(): void {
-    this.vService.getEncounterCardsData().subscribe((res: any) => {
-      let packs: any[] = [];
-      let typeCode: any[] = [];
-      res.forEach((card: any) => {
-        if (typeCode.find((x: any) => { x == card.type_code }) == undefined) typeCode.push(card.type_code)
-        if (card.type_code == 'villain' || card.type_code == 'main_scheme' || card.type_code == 'side_scheme' || card.type_code == 'minion') {
-          if (packs[card.card_set_code] == undefined) packs[card.card_set_code] = [];
-          packs[card.card_set_code].text = card.card_set_name;
-          packs[card.card_set_code].card_set_code = card.card_set_code;
-
-          if (card.type_code == 'villain') {
-            if (packs[card.card_set_code].villain_phases == undefined) packs[card.card_set_code].villain_phases = [];
-            packs[card.card_set_code].villain_phases.push(card)
-          }
-
-          if (card.type_code == 'main_scheme') {
-            if (packs[card.card_set_code].main_scheme == undefined) packs[card.card_set_code].main_scheme = [];
-            packs[card.card_set_code].main_scheme.push(card)
-          }
-
-          if (card.type_code == 'side_scheme') {
-            if (packs[card.card_set_code].side_scheme == undefined) packs[card.card_set_code].side_scheme = [];
-            packs[card.card_set_code].side_scheme.push(card)
-          }
-
-          if (card.type_code == 'minion') {
-            if (packs[card.card_set_code].minion == undefined) packs[card.card_set_code].minion = [];
-            packs[card.card_set_code].minion.push(card)
-          }
-
-        }
-      });
-
-      typeCode = [...new Set(typeCode)];
-      console.log(typeCode);
-
-      let mainSets: any[] = [];
-      let modularSets: any[] = [];
-      for (const key in packs) {
-        const pack = packs[key];
-        if (pack.main_scheme != undefined) {
-          if (pack.villain_phases) {
-            pack.villain_phases.forEach((villain_phase: any) => {
-              villain_phase.card_text = villain_phase.text;
-              villain_phase.text = villain_phase.name + ' ' + villain_phase.stage;
-            });
-          }
-          mainSets.push(pack);
-        }
-        else {
-          if (!pack.card_set_code.includes("_nemesis"))
-            modularSets.push(pack);
-        }
-      }
-
-      console.log(modularSets)
-      console.log(mainSets);
-
-      this.villains = mainSets;
-      this.modularSets = modularSets;
-
-    });
-
-    // this.modularSets = this.vService.modularSets;
-
     //Invoked in playersComponent when selecting players quantity
-    this.vService.invokePlayersInput.subscribe((players: any) => {
+    this.shared.invokePlayersInput.subscribe((players: any) => {
       this.players = players;
       if (this.villain != undefined) {
         this.selectPhase(this.villainPhase);
@@ -116,14 +49,6 @@ export class VillainSelectorComponent implements OnInit {
         });
       }
     });
-  }
-
-  log(e: any) {
-    console.log(e)
-  }
-
-  startGame() {
-    this.settingsReady = true;
   }
 
   resetSettings() {
@@ -140,7 +65,7 @@ export class VillainSelectorComponent implements OnInit {
   }
 
   selectVillain(e: any) {
-    this.villain = this.villains.find((x: any) => x.card_set_code == e)
+    this.villain = this.shared.villains.find((x: any) => x.card_set_code == e)
     this.villainPhase = this.villain.villain_phases[0];
     this.villainPhase['currentHP'] = this.villainPhase.health;
     this.currentScheme = this.villain.main_scheme[0].init;
@@ -172,7 +97,7 @@ export class VillainSelectorComponent implements OnInit {
 
   putSideSchemeInPlay(planIDs: any) {
     console.log(planIDs)
-    //TagBox version
+
     planIDs.value.forEach((planID: any) => {
       let plan = this.planList.find((x: any) => x.code == planID);
 
@@ -189,28 +114,9 @@ export class VillainSelectorComponent implements OnInit {
 
       let indexPlanList = this.planList.findIndex((x: any) => x.code == planID);
       this.planList.splice(indexPlanList, 1);
-
     })
 
     console.log(this.planList)
-
-    // //SelectBox version
-    // let planID = planIDs.value;
-    // let plan = this.planList.find((x: any) => x.code == planID);
-
-    // let index = this.planList.findIndex((x: any) => x.code == planID);
-    // this.planList.splice(index, 1);
-    // console.log(plan)
-
-    // //Set initial scheme
-    // let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
-    // plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
-    // this.plansInPlay.push(plan);
-
-    // this.plansInPlay.forEach((inPlay: any) => {
-    //   inPlay.planUI = this.setSideSchemeUI(inPlay);
-    // });
-
   }
 
   removeSideScheme(code: any) {
@@ -229,7 +135,7 @@ export class VillainSelectorComponent implements OnInit {
     });
 
     e.value.forEach((card_set_code: any) => {
-      let modularSet = this.modularSets.find((x: any) => x.card_set_code == card_set_code);
+      let modularSet = this.shared.modularSets.find((x: any) => x.card_set_code == card_set_code);
       modularSet.side_scheme.forEach((plan: any) => {
         for (let i = 1; i <= plan.quantity; i++) {
           planList.push({ ...plan })//Esto nos deja clonar el pobjeto 'plan' sin guardar la referencia, ayudando a diferenciar planes duplicados

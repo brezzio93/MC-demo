@@ -15,8 +15,6 @@ export class VillainSelectorComponent implements OnInit {
   villain: any;
   villainPhase: any;
 
-  modularSetsSelection: SingleMultipleAllOrNone = 'single';
-
   currentScheme = 0;
   schemePhase = 0;
   accelToken = 0;
@@ -61,7 +59,7 @@ export class VillainSelectorComponent implements OnInit {
     this.villainPhase = undefined;
 
     this.plansInPlay = [];
-    this.planList = [];
+    this.shared.planList = [];
   }
 
   selectVillain(e: any) {
@@ -70,36 +68,27 @@ export class VillainSelectorComponent implements OnInit {
     this.villainPhase['currentHP'] = this.villainPhase.health;
     this.currentScheme = this.villain.main_scheme[0].init;
     this.villainPhase.currentHP = this.villainPhase.maxHP = (this.villainPhase.health * this.players);
+    this.shared.minions = this.villain.minions;
 
     this.setLifepointsUI();
     this.setMainSchemeUI(0);
 
-    //buscamos este texto para saber cuantos conjuntos modulares se ocupan
-    // this.villain.main_scheme[0].back_text.find((X) "modular encounter set")
-
-    this.modularSetsSelection = (this.villain.modularSetsQty == 1) ? 'single' : 'multiple';
-
     this.plansInPlay = [];
-    this.planList = [];
+    this.shared.planList = [];
     this.villain.side_scheme.forEach((scheme: any) => {
-      this.planList.push(scheme)
+      this.shared.planList.push(scheme)
     });
-
-    console.log(this.planList)
   }
 
   selectPhase(villainPhase: any) {
-    console.log(villainPhase)
     this.villainPhase = villainPhase;
     this.villainPhase.currentHP = this.villainPhase.maxHP = (villainPhase.health * this.players);
     this.setLifepointsUI();
   }
 
   putSideSchemeInPlay(planIDs: any) {
-    console.log(planIDs)
-
     planIDs.value.forEach((planID: any) => {
-      let plan = this.planList.find((x: any) => x.code == planID);
+      let plan = this.shared.planList.find((x: any) => x.code == planID);
 
       //Set initial scheme
       let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
@@ -112,23 +101,26 @@ export class VillainSelectorComponent implements OnInit {
         this.plansInPlay[this.plansInPlay.length - 1].planUI = this.setSideSchemeUI(this.plansInPlay[this.plansInPlay.length - 1]);
       }
 
-      let indexPlanList = this.planList.findIndex((x: any) => x.code == planID);
-      this.planList.splice(indexPlanList, 1);
+      let indexPlanList = this.shared.planList.findIndex((x: any) => x.code == planID);
+      this.shared.planList.splice(indexPlanList, 1);
     })
-
-    console.log(this.planList)
   }
 
   removeSideScheme(code: any) {
     let index = this.plansInPlay.findIndex((x: any) => x.code == code);
     let plan = this.plansInPlay.find((x: any) => x.code == code);
     this.plansInPlay.splice(index, 1);
-    this.planList.push(plan);
-    console.log(this.planList);
+    this.shared.planList.push(plan);
   }
 
   selectScheme(e: any) {
     let planList: any[] = [];
+    let minions: any[] = [];
+
+    this.villain.minions;
+    this.villain.minions.forEach((minion: any) => {
+      minions.push(minion)
+    });
 
     this.villain.side_scheme.forEach((scheme: any) => {
       planList.push(scheme)
@@ -136,6 +128,13 @@ export class VillainSelectorComponent implements OnInit {
 
     e.value.forEach((card_set_code: any) => {
       let modularSet = this.shared.modularSets.find((x: any) => x.card_set_code == card_set_code);
+      if (modularSet) {
+        if (modularSet['minions'] == undefined) modularSet.minions = [];
+        modularSet.minions.forEach((minion: any) => {
+          minions.push(minion)
+        });
+      }
+
       modularSet.side_scheme.forEach((plan: any) => {
         for (let i = 1; i <= plan.quantity; i++) {
           planList.push({ ...plan })//Esto nos deja clonar el pobjeto 'plan' sin guardar la referencia, ayudando a diferenciar planes duplicados
@@ -147,8 +146,8 @@ export class VillainSelectorComponent implements OnInit {
       plan.code = plan.code + '_' + index;
     });
 
-    this.planList = planList;
-    console.log(planList)
+    this.shared.planList = planList;
+    this.shared.minions = minions;
     this.plansInPlay = [];
   }
 

@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "build-themes": "devextreme build",
-    "postinstall": "npm run build-themes"
+    "postinstall": "npm run build-themes",
+    "dev": "lite-server --baseDir=dist/mc-demo"
   },
   "private": true,
   "dependencies": {
@@ -37,6 +38,7 @@
     "@angular/compiler-cli": "^16.2.0",
     "@angular/localize": "^16.2.0",
     "@types/jasmine": "~4.3.0",
+    "angular-cli-ghpages": "^2.0.1",
     "devextreme-cli": "latest",
     "devextreme-themebuilder": "24.1.3",
     "jasmine-core": "~4.6.0",
@@ -45,6 +47,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "lite-server": "^2.6.1",
     "typescript": "~5.1.3"
   }
 }

@@ -7,10 +7,13 @@ import { Observable } from 'rxjs';
 })
 export class DataService {
 
+  settingsReady = false;
   villains: any = [];
   modularSets: any = [];
+  planList: any = [];
   heroes: any = [];
-  settingsReady = false;
+  allies: any = [];
+  minions: any;
 
   constructor(private http: HttpClient) { }
 

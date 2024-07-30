@@ -43,6 +43,46 @@
                         </tr>
                     </table>
                 </div>
+                <!-- Ally Selector -->
+                <!-- <h5 class="heroName">Put ally on Play</h5>
+                <dx-tag-box
+                    [dataSource]="players[i].alliesDropdown"
+                    displayExpr="name"
+                    valueExpr="code"
+                    applyValueMode="useButtons"
+                    [multiline]="true"
+                    [searchEnabled]="true"
+                    [searchMode]="'contains'"
+                    [showSelectionControls]="true" 
+                    tagTemplate="customTag"
+                    [hideSelectedItems]="true"
+                    (onValueChanged)="putAllyInPlay($event, i)">
+                    <div *dxTemplate="let product of 'customTag'">
+                        <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                        <span>{{product.name}}</span>
+                        </div>
+                    </div>
+                </dx-tag-box> -->
+                <!-- Minions Selector -->
+                <h5 class="heroName">Put Minion on Play</h5>
+                <dx-tag-box
+                    [dataSource]="shared.minions"
+                    displayExpr="name"
+                    valueExpr="code"
+                    applyValueMode="useButtons"
+                    [multiline]="true"
+                    [searchEnabled]="true"
+                    [searchMode]="'contains'"
+                    [showSelectionControls]="true" 
+                    tagTemplate="customTag"
+                    [hideSelectedItems]="true"
+                    (onValueChanged)="putAllyInPlay($event, i)">
+                    <div *dxTemplate="let product of 'customTag'">
+                        <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                        <span>{{product.name}}</span>
+                        </div>
+                    </div>
+                </dx-tag-box>
             </div>
         </ng-container>
     </div>

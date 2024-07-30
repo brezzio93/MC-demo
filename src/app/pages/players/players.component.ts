@@ -20,6 +20,8 @@ export class PlayersComponent {
   players: any = [];
   lifePointsUI: any = [];
 
+  minionList = [];
+
   constructor(
     public shared: DataService
   ) { }
@@ -35,7 +37,13 @@ export class PlayersComponent {
   selectHero(hero_card_set_code: any, index: number) {
     let hero = this.shared.heroes.find((x: any) => x.card_set_code == hero_card_set_code)
     hero.currentHP = hero.maxHP = hero.health;
-
+    hero.alliesDropdown = [];
+    hero.allies.forEach((ally: any) => {
+      hero.alliesDropdown.push(ally);
+    });
+    this.shared.allies.forEach((ally: any) => {
+      hero.alliesDropdown.push(ally);
+    });
     this.setLifepointsUI(hero, index);
     this.players[index] = hero;
     console.log(hero)
@@ -57,6 +65,10 @@ export class PlayersComponent {
         if (circle.index > this.players[heroIndex].currentHP) circle.state = false;
       })
     })
+  }
+
+  putAllyInPlay(e: any, heroIndex: any) {
+
   }
 
   setLifepointsUI(hero: any, index: number) {

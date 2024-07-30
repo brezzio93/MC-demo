@@ -11,6 +11,7 @@ export class HomeComponent implements OnInit {
 
   villains: any;
   modularSets: any;
+  
   constructor(
     public service: DataService,
   ) { }
@@ -43,8 +44,8 @@ export class HomeComponent implements OnInit {
           }
 
           if (card.type_code == 'minion') {
-            if (encounterPacks[card.card_set_code].minion == undefined) encounterPacks[card.card_set_code].minion = [];
-            encounterPacks[card.card_set_code].minion.push(card)
+            if (encounterPacks[card.card_set_code].minions == undefined) encounterPacks[card.card_set_code].minions = [];
+            encounterPacks[card.card_set_code].minions.push(card)
           }
 
         }
@@ -69,7 +70,7 @@ export class HomeComponent implements OnInit {
       });
 
       typeCode = [...new Set(typeCode)];
-      console.log(typeCode);
+      // console.log(typeCode);
 
       let mainSets: any[] = [];
       let modularSets: any[] = [];
@@ -98,18 +99,18 @@ export class HomeComponent implements OnInit {
           heroSets.push(pack);
         }
         else {
-          console.log(pack)
           pack.allies.forEach((ally: any) => {
             allySets.push(ally);
           });
         }
       }
-      console.log(heroSets);
-      console.log(allySets);
+      // console.log(heroSets);
+      // console.log(mainSets);
 
       this.service.villains = this.villains = mainSets;
       this.service.modularSets = this.modularSets = modularSets;
       this.service.heroes = heroSets;
+      this.service.allies = allySets;
 
     });
   }

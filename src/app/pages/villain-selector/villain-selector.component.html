@@ -10,6 +10,7 @@
             [labelMode]="'static'"
             [stylingMode]="'outlined'"
             label="Select Encounter"
+            placeholder="... "
             (onValueChanged)="selectVillain($event.value)">
         </dx-select-box> 
     </ng-container>
@@ -23,7 +24,7 @@
             (onItemClick)="selectPhase($event.itemData)">
         </dx-tabs>
         <ng-container *ngIf="villainPhase != undefined">
-            <div class="row" style="margin-top: 2rem;">
+            <div class="row">
                 <!-- Villain HP -->
                 <div class="col">
                     <h4 class="normalText">{{villain.text}}</h4>
@@ -55,9 +56,7 @@
                         <dx-button style="margin-top: 1rem;" (onClick)="updateMainScheme(1)" icon="minus"> </dx-button>
                         <dx-button style="margin-top: 1rem;" (onClick)="updateMainScheme(-1)" icon="plus"> </dx-button>
                         <dx-button style="margin-top: 1rem;" (onClick)="acceleratePlan()" text="Accelerate"> </dx-button>
-                        <dx-button style="margin-top: 1rem;" 
-                        *ngIf="
-                        (currentScheme >= villain.main_scheme[schemePhase].maxEnd)" 
+                        <dx-button style="margin-top: 1rem;" *ngIf=" (currentScheme >= villain.main_scheme[schemePhase].maxEnd)" 
                             (onClick)="setMainSchemeUI(schemePhase + 1)" icon="greater"> 
                         </dx-button>
                     </div>
@@ -73,36 +72,6 @@
                             </td>
                         </tr>
                     </table>
-                </div>
-            </div>
-            <hr>
-            
-            <div class="row" style="margin-top: 2rem;">
-                <div class="col">
-                    <!-- Side Schemes -->
-                    <ng-container *ngFor="let plan of plansInPlay">
-                        <div class="schemeDiv">
-                            <h5 class="normalText"> {{plan.name}} </h5>
-                            <h5 class="normalText">{{plan.current}} / {{plan.end}} </h5>
-                            <div>
-                                <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateSideScheme(1, plan)" icon="minus"> </dx-button>
-                                <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateSideScheme(-1, plan)" icon="plus"> </dx-button>
-                                <dx-button style="margin-top: 1rem;" *ngIf="plan.current == 0 || !shared.settingsReady"  (onClick)="removeSideScheme(plan.code)" icon="remove"> </dx-button>
-                            </div>
-                            <table>
-                                <tr *ngFor="let row of plan.planUI;">
-                                    <td *ngFor="let circle of row">
-                                        <div class="circleBg">
-                                            <div [ngClass]="{
-                                                schemeCenter:circle.state == true,
-                                                schemeOverflow: (plan.current > plan.end) && circle.index > plan.end
-                                            }"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </ng-container>
                 </div>
                 <div class="col-3">
                     <!-- Set Modular Sets -->
@@ -144,7 +113,36 @@
                             </div>
                         </div>
                     </dx-tag-box>
-
+                </div>                
+            </div>
+            <hr>
+            
+            <div class="row">
+                <div class="col">
+                    <!-- Side Schemes -->
+                    <ng-container *ngFor="let plan of plansInPlay">
+                        <div class="schemeDiv">
+                            <h5 class="normalText"> {{plan.name}} </h5>
+                            <h5 class="normalText">{{plan.current}} / {{plan.end}} </h5>
+                            <div>
+                                <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateSideScheme(1, plan)" icon="minus"> </dx-button>
+                                <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateSideScheme(-1, plan)" icon="plus"> </dx-button>
+                                <dx-button style="margin-top: 1rem;" *ngIf="plan.current == 0 || !shared.settingsReady"  (onClick)="removeSideScheme(plan.code)" icon="remove"> </dx-button>
+                            </div>
+                            <table style="height: 50px;">
+                                <tr *ngFor="let row of plan.planUI;">
+                                    <td *ngFor="let circle of row">
+                                        <div class="circleBg">
+                                            <div [ngClass]="{
+                                                schemeCenter:circle.state == true,
+                                                schemeOverflow: (plan.current > plan.end) && circle.index > plan.end
+                                            }"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </ng-container>
                 </div>
             </div>
         </ng-container>

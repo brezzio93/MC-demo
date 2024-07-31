@@ -1,11 +1,4 @@
-<div class="content-block">
-  <div class="dx-card responsive-paddings">
-    <app-players></app-players>
-    <!-- Start Game -->
-    <dx-button *ngIf="!service.settingsReady"
-        style="margin-top: 1rem;"
-        (onClick)="startGame()"
-        text="Ready?">
-    </dx-button>    
-  </div>
-</div>
+<app-players></app-players>
+<!-- Start Game -->
+<dx-button *ngIf="!service.settingsReady" style="margin-top: 1rem;" (onClick)="startGame()" text="Ready?">
+</dx-button>

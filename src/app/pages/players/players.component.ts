@@ -20,11 +20,20 @@ export class PlayersComponent {
   players: any = [];
   lifePointsUI: any = [];
 
-  minionList = [];
+  minionList: any[][] = [];
+  minionsInPlay: any[][] = [];
 
   constructor(
     public shared: DataService
   ) { }
+
+  ngOnInit(): void {
+    //Invoked in villainSelectorComponent when finishing game (pressing "next phase" button when in last plan)
+    this.shared.invokeResetSettings.subscribe((options: any) => {
+      this.players = [];
+      this.playersInput = 0;
+    });
+  }
 
   selectPlayers(players: any) {
     this.playersInput = players;
@@ -68,12 +77,53 @@ export class PlayersComponent {
     })
   }
 
-  putAllyInPlay(e: any, heroIndex: any) {
+  updateMinionHP(damage: number, minion: any, heroIndex?: any) {
+    let auxMinion = this.minionsInPlay[heroIndex].find((x: any) => x.code == minion.code)
+    auxMinion.current = auxMinion.current - damage;
 
+    if (auxMinion.current < 0) auxMinion.current = 0;
+    if (auxMinion.current >= auxMinion.end) auxMinion.ui = this.setMinionUI(auxMinion);
+
+    auxMinion.ui.forEach((row: any[]) => {
+      row.forEach(circles => {
+        circles.state = true;
+      })
+    })
+
+    auxMinion.ui.forEach((row: any[]) => {
+      row.forEach(circle => {
+        if (circle.index > auxMinion.current) circle.state = false;
+      })
+    })
+  }
+
+  putAllyInPlay(e: any, heroIndex: any) {
   }
 
   putMinionInPlay(e: any, heroIndex: any) {
+    if (this.minionsInPlay[heroIndex] == undefined) this.minionsInPlay[heroIndex] = [];
+    e.value.forEach((code: any) => {
+      let minion = this.shared.minions.find((x: any) => x.code == code);
 
+      //Set initial HP
+      let playersMultiplier = (!minion.health_per_hero) ? this.playersInput : 1;
+      let indexInPlay = this.minionsInPlay[heroIndex].findIndex((x: any) => x.code == code);
+
+      //set UI only if scheme is not already in game
+      if (indexInPlay == -1) {
+        minion['current'] = minion['end'] = (minion.health * playersMultiplier);
+        this.minionsInPlay[heroIndex].push({ ...minion });
+        this.minionsInPlay[heroIndex][this.minionsInPlay[heroIndex].length - 1].ui = this.setMinionUI(this.minionsInPlay[heroIndex][this.minionsInPlay[heroIndex].length - 1]);
+      }
+    })
+    console.log(this.minionsInPlay)
+  }
+
+  removeMinion(code: any, heroIndex: any) {
+    let index = this.minionsInPlay[heroIndex].findIndex((x: any) => x.code == code)
+    let plan = this.minionsInPlay[heroIndex].find((x: any) => x.code == code);
+    this.minionsInPlay[heroIndex].splice(index, 1);
+    // this.minionList.push(plan);
   }
 
   setLifepointsUI(hero: any, index: number) {
@@ -92,6 +142,33 @@ export class PlayersComponent {
     }
 
     this.lifePointsUI[index] = rows;
+  }
+
+  setMinionUI(minion: any): any {
+    let rows: any = [[]];
+    let rowIndex = 0;
+    let qty = 1;
+
+    let max = (minion.current < minion.end) ? minion.end : minion.current;
+
+    for (let i = 1; i <= max; i++) {
+      const element = minion[i];
+      if (rows[rowIndex] == undefined) rows[rowIndex] = [];
+      rows[rowIndex].push({ state: minion.current >= i, index: i });
+      if (i % 10 == 0) {
+        rowIndex++;
+        qty = 1;
+      }
+      qty++;
+
+    }
+    return rows;
+  }
+
+  setAllyUI(ally: any) {
+
+    let rows: any = [[]];
+    return rows;
   }
 
 }

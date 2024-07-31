@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class DataService {
 
+
   settingsReady = false;
   villains: any = [];
   modularSets: any = [];
@@ -22,8 +23,13 @@ export class DataService {
   }
 
   invokePlayersInput = new EventEmitter();
-
   updatePlayers(playersInput: number) {
     this.invokePlayersInput.emit(playersInput);
   }
+
+  invokeResetSettings = new EventEmitter();
+  resetSettings() {
+    this.invokeResetSettings.emit(true);
+  }
+
 }

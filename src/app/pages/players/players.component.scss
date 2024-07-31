@@ -3,7 +3,16 @@
     -webkit-text-stroke: 1px black;
     font-weight: 900;
 }
+.minionName{
+    -webkit-text-fill-color: white;
+    -webkit-text-stroke: 1px black;
+    font-weight: 900;
+}
 
 ::ng-deep .dx-tagbox.dx-editor-filled .dx-tag-container, .dx-tagbox.dx-editor-outlined .dx-tag-container {
     background-color: #fff;
+}
+
+::ng-deep dx-tag-box {
+    background-color: #fff !important;
 }

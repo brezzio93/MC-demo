@@ -6,98 +6,264 @@
         [labelMode]="'static'"
         [stylingMode]="'outlined'"
         label="Select Players"
+        placeholder="..."
         (onValueChanged)="selectPlayers($event.value)"></dx-select-box>
 </ng-container>
-<ng-container *ngIf="playersInput > 2">
 
-</ng-container>
-
-<div style="margin-top: 2rem;">
-    <app-villain-selector [players]="playersInput"></app-villain-selector>
+<div class="row" style="margin-top: 1rem;">
+    <ng-container *ngFor="let item of  [].constructor(playersInput); index as i">
+        <div class="col" *ngIf="i>1">
+            <!-- Hero Select -->
+            <ng-container *ngIf="!shared.settingsReady">
+                <dx-select-box 
+                    [items]="shared.heroes" 
+                    displayExpr="text" 
+                    valueExpr="card_set_code" 
+                    [searchEnabled]="true"
+                    [searchMode]="'contains'" 
+                    [labelMode]="'static'"
+                    [stylingMode]="'outlined'"
+                    label="Select Hero"
+                    placeholder="... "
+                    (onValueChanged)="selectHero($event.value, i)"></dx-select-box>
+            </ng-container>
+            <!-- Hero Details -->
+            <ng-container *ngIf="players[i]">
+                <div [ngStyle]="{'background':players[i]?.colors}">
+                    <!-- HERO HP -->
+                    <div class="col">
+                        <h5 class="heroName">{{players[i]?.text}}</h5>
+                        <h5 class="heroName">{{players[i]?.currentHP}} / {{players[i]?.maxHP}} HP</h5>
+                        <div *ngIf="shared.settingsReady">
+                            <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,1)" icon="minus"> </dx-button>
+                            <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,-1)" icon="plus"> </dx-button>
+                        </div>
+                        <table style="height: 50px;">
+                            <tr *ngFor="let row of lifePointsUI[i];">
+                                <td *ngFor="let circle of row">
+                                    <div class="circleBg">
+                                        <div [ngClass]="{
+                                            hpCenter:circle.state == true,
+                                            hpOverflow: (players[i]?.currentHP > players[i]?.maxHP) && circle.index > players[i]?.maxHP
+                                        }"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="row" style="margin-top: 1rem;">
+                        <!-- Ally Selector -->
+                        <dx-tag-box
+                            class="col-5"
+                            style="margin-left:2rem"
+                            [dataSource]="players[i].alliesDropdown"
+                            displayExpr="name"
+                            valueExpr="code"
+                            applyValueMode="useButtons"
+                            [multiline]="true"
+                            [searchEnabled]="true"
+                            [searchMode]="'contains'"
+                            [showSelectionControls]="true" 
+                            tagTemplate="customTag"
+                            [hideSelectedItems]="true"
+                            [labelMode]="'hidden'" 
+                            [stylingMode]="'outlined'"
+                            label="Put ally on Play"
+                            placeholder="Put ally on Play"
+                            (onValueChanged)="putAllyInPlay($event, i)">
+                            <div *dxTemplate="let product of 'customTag'">
+                                <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                                <span>{{product.name}}</span>
+                                </div>
+                            </div>
+                        </dx-tag-box>
+                        <!-- Minions Selector -->
+                        <dx-tag-box
+                            class="col-5"
+                            style="margin-left:2rem"
+                            [dataSource]="shared.minions"
+                            displayExpr="name"
+                            valueExpr="code"
+                            applyValueMode="useButtons"
+                            [multiline]="true"
+                            [searchEnabled]="true"
+                            [searchMode]="'contains'"
+                            [showSelectionControls]="true" 
+                            tagTemplate="customTag"
+                            [hideSelectedItems]="true"
+                            [labelMode]="'hidden'" 
+                            [stylingMode]="'outlined'"
+                            label="Put Minion on Play"
+                            placeholder="Put Minion on Play"
+                            (onValueChanged)="putMinionInPlay($event, i)">
+                            <div *dxTemplate="let product of 'customTag'">
+                                <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                                    <span>{{product.name}}</span>
+                                </div>
+                            </div>
+                        </dx-tag-box>
+                    </div>
+                    <!-- Minions -->
+                    <div class="row">
+                        <ng-container *ngFor="let minion of minionsInPlay[i]">
+                            <div class="schemeDiv col-3">
+                                <h5 class="minionName"> {{minion.name}} </h5>
+                                <h5 class="minionName">{{minion.current}} / {{minion.end}} </h5>
+                                <div>
+                                    <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateMinionHP(1, minion, i)" icon="minus"> </dx-button>
+                                    <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateMinionHP(-1, minion, i)" icon="plus"> </dx-button>
+                                    <dx-button style="margin-top: 1rem;" *ngIf="!shared.settingsReady" (onClick)="removeMinion(minion.code, i)" icon="remove"> </dx-button>
+                                </div>
+                                <table>
+                                    <tr *ngFor="let row of minion.ui;">
+                                        <td *ngFor="let circle of row">
+                                            <div class="circleBg">
+                                                <div [ngClass]="{
+                                                    schemeCenter:circle.state == true,
+                                                    schemeOverflow: (minion.current > minion.end) && circle.index > minion.end
+                                                }"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- Allies -->
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
 </div>
 
-<div class="row" style="margin-top: 2rem;">
-    <div class="col" *ngFor="let item of  [].constructor(playersInput); index as i">
-        <!-- Hero Select -->
-        <ng-container *ngIf="!shared.settingsReady">
-            <dx-select-box 
-                [items]="shared.heroes" 
-                displayExpr="text" 
-                valueExpr="card_set_code" 
-                [searchEnabled]="true"
-                [searchMode]="'contains'" 
-                [labelMode]="'static'"
-                [stylingMode]="'outlined'"
-                label="Select Hero"
-                (onValueChanged)="selectHero($event.value, i)"></dx-select-box>
-        </ng-container>
-        <!-- Hero Details -->
-        <ng-container *ngIf="players[i]">
-            <div [ngStyle]="{'background':players[i]?.colors}">
-                <!-- HERO HP -->
-                <div class="col">
-                    <h5 class="heroName">{{players[i]?.text}}</h5>
-                    <h5 class="heroName">{{players[i]?.currentHP}} / {{players[i]?.maxHP}} HP</h5>
-                    <div *ngIf="shared.settingsReady">
-                        <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,1)" icon="minus"> </dx-button>
-                        <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,-1)" icon="plus"> </dx-button>
+<div style="margin-top: 1rem;">
+    <app-villain-selector [playersInput]="playersInput"></app-villain-selector>
+</div>
+
+<hr>
+
+<div class="row" style="margin-top: 1rem;">
+    <ng-container class="col" *ngFor="let item of  [].constructor(playersInput); index as i">
+        <div class="col" *ngIf="i<2">
+            <!-- Hero Select -->
+            <ng-container *ngIf="!shared.settingsReady">
+                <dx-select-box 
+                    [items]="shared.heroes" 
+                    displayExpr="text" 
+                    valueExpr="card_set_code" 
+                    [searchEnabled]="true"
+                    [searchMode]="'contains'" 
+                    [labelMode]="'static'"
+                    [stylingMode]="'outlined'"
+                    label="Select Hero"
+                    placeholder="... "
+                    (onValueChanged)="selectHero($event.value, i)"></dx-select-box>
+            </ng-container>
+            <!-- Hero Details -->
+            <ng-container *ngIf="players[i]">
+                <div [ngStyle]="{'background':players[i]?.colors}">
+                    <!-- HERO HP -->
+                    <div class="col">
+                        <h5 class="heroName">{{players[i]?.text}}</h5>
+                        <h5 class="heroName">{{players[i]?.currentHP}} / {{players[i]?.maxHP}} HP</h5>
+                        <div *ngIf="shared.settingsReady">
+                            <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,1)" icon="minus"> </dx-button>
+                            <dx-button style="margin-top: 1rem;" (onClick)="updateHP(i,-1)" icon="plus"> </dx-button>
+                        </div>
+                        <table style="height: 50px;">
+                            <tr *ngFor="let row of lifePointsUI[i];">
+                                <td *ngFor="let circle of row">
+                                    <div class="circleBg">
+                                        <div [ngClass]="{
+                                            hpCenter:circle.state == true,
+                                            hpOverflow: (players[i]?.currentHP > players[i]?.maxHP) && circle.index > players[i]?.maxHP
+                                        }"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
-                    <table>
-                        <tr *ngFor="let row of lifePointsUI[i];">
-                            <td *ngFor="let circle of row">
-                                <div class="circleBg">
-                                    <div [ngClass]="{
-                                        hpCenter:circle.state == true,
-                                        hpOverflow: (players[i]?.currentHP > players[i]?.maxHP) && circle.index > players[i]?.maxHP
-                                    }"></div>
+                    <div class="row" style="margin-top: 1rem;">
+                        <!-- Ally Selector -->
+                        <dx-tag-box
+                            class="col-5"
+                            style="margin-left:2rem"
+                            [dataSource]="players[i].alliesDropdown"
+                            displayExpr="name"
+                            valueExpr="code"
+                            applyValueMode="useButtons"
+                            [multiline]="true"
+                            [searchEnabled]="true"
+                            [searchMode]="'contains'"
+                            [showSelectionControls]="true" 
+                            tagTemplate="customTag"
+                            [hideSelectedItems]="true"
+                            [labelMode]="'hidden'" 
+                            [stylingMode]="'outlined'"
+                            label="Put ally on Play"
+                            placeholder="Put ally on Play"
+                            (onValueChanged)="putAllyInPlay($event, i)">
+                            <div *dxTemplate="let product of 'customTag'">
+                                <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                                <span>{{product.name}}</span>
                                 </div>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                        </dx-tag-box>
+                        <!-- Minions Selector -->
+                        <dx-tag-box
+                            class="col-5"
+                            style="margin-left:2rem"
+                            [dataSource]="shared.minions"
+                            displayExpr="name"
+                            valueExpr="code"
+                            applyValueMode="useButtons"
+                            [multiline]="true"
+                            [searchEnabled]="true"
+                            [searchMode]="'contains'"
+                            [showSelectionControls]="true" 
+                            tagTemplate="customTag"
+                            [hideSelectedItems]="true"
+                            [labelMode]="'hidden'" 
+                            [stylingMode]="'outlined'"
+                            label="Put Minion on Play"
+                            placeholder="Put Minion on Play"
+                            (onValueChanged)="putMinionInPlay($event, i)">
+                            <div *dxTemplate="let product of 'customTag'">
+                                <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
+                                    <span>{{product.name}}</span>
+                                </div>
+                            </div>
+                        </dx-tag-box>
+                    </div>
+                    <!-- Minions -->
+                    <div class="row">
+                        <ng-container *ngFor="let minion of minionsInPlay[i]">
+                            <div class="schemeDiv col-3">
+                                <h5 class="minionName"> {{minion.name}} </h5>
+                                <h5 class="minionName">{{minion.current}} / {{minion.end}} </h5>
+                                <div>
+                                    <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateMinionHP(1, minion, i)" icon="minus"> </dx-button>
+                                    <dx-button style="margin-top: 1rem;" *ngIf="shared.settingsReady" (onClick)="updateMinionHP(-1, minion, i)" icon="plus"> </dx-button>
+                                    <dx-button style="margin-top: 1rem;" *ngIf="!shared.settingsReady" (onClick)="removeMinion(minion.code, i)" icon="remove"> </dx-button>
+                                </div>
+                                <table>
+                                    <tr *ngFor="let row of minion.ui;">
+                                        <td *ngFor="let circle of row">
+                                            <div class="circleBg">
+                                                <div [ngClass]="{
+                                                    schemeCenter:circle.state == true,
+                                                    schemeOverflow: (minion.current > minion.end) && circle.index > minion.end
+                                                }"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- Allies -->
                 </div>
-                <!-- Ally Selector -->
-                <!-- <dx-tag-box
-                    [dataSource]="players[i].alliesDropdown"
-                    displayExpr="name"
-                    valueExpr="code"
-                    applyValueMode="useButtons"
-                    [multiline]="true"
-                    [searchEnabled]="true"
-                    [searchMode]="'contains'"
-                    [showSelectionControls]="true" 
-                    tagTemplate="customTag"
-                    [hideSelectedItems]="true"
-                    [labelMode]="'static'" 
-                    label="Put ally on Play"
-                    (onValueChanged)="putAllyInPlay($event, i)">
-                    <div *dxTemplate="let product of 'customTag'">
-                        <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
-                        <span>{{product.name}}</span>
-                        </div>
-                    </div>
-                </dx-tag-box> -->
-                <!-- Minions Selector -->
-                <dx-tag-box
-                    [dataSource]="shared.minions"
-                    displayExpr="name"
-                    valueExpr="code"
-                    applyValueMode="useButtons"
-                    [multiline]="true"
-                    [searchEnabled]="true"
-                    [searchMode]="'contains'"
-                    [showSelectionControls]="true" 
-                    tagTemplate="customTag"
-                    [hideSelectedItems]="true"
-                    [labelMode]="'static'" 
-                    label="Put Minion on Play"
-                    (onValueChanged)="putMinionInPlay($event, i)">
-                    <div *dxTemplate="let product of 'customTag'">
-                        <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
-                        <span>{{product.name}}</span>
-                        </div>
-                    </div>
-                </dx-tag-box>
-            </div>
-        </ng-container>
-    </div>
+            </ng-container>
+        </div>
+    </ng-container>
 </div>

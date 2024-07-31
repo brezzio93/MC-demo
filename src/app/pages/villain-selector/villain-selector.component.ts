@@ -10,8 +10,6 @@ import { DataService } from 'src/app/shared/services/data.service';
 
 export class VillainSelectorComponent implements OnInit {
 
-  settingsReady = false;
-
   villain: any;
   villainPhase: any;
 
@@ -25,7 +23,7 @@ export class VillainSelectorComponent implements OnInit {
   lifePointsUI: { state: boolean; index: number }[][] = [];
   mainSchemeUI: { state: boolean; index: number }[][] = [];
 
-  @Input() players: number = 0;
+  @Input() playersInput: number = 0;
 
   constructor(
     public shared: DataService,
@@ -34,14 +32,14 @@ export class VillainSelectorComponent implements OnInit {
   ngOnInit(): void {
     //Invoked in playersComponent when selecting players quantity
     this.shared.invokePlayersInput.subscribe((players: any) => {
-      this.players = players;
+      this.playersInput = players;
       if (this.villain != undefined) {
         this.selectPhase(this.villainPhase);
         this.setMainSchemeUI(0);
 
         this.plansInPlay.forEach((plan: any) => {
           //Set initial scheme
-          let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
+          let playersMultiplier = (!plan.base_threat_fixed) ? this.playersInput : 1;
           plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
           plan.planUI = this.setSideSchemeUI(plan);
         });
@@ -50,7 +48,6 @@ export class VillainSelectorComponent implements OnInit {
   }
 
   resetSettings() {
-    this.settingsReady = false;
     this.currentScheme = 0;
     this.schemePhase = 0;
     this.accelToken = 0;
@@ -60,6 +57,8 @@ export class VillainSelectorComponent implements OnInit {
 
     this.plansInPlay = [];
     this.shared.planList = [];
+    this.shared.settingsReady = false;
+    this.shared.resetSettings();
   }
 
   selectVillain(e: any) {
@@ -67,7 +66,7 @@ export class VillainSelectorComponent implements OnInit {
     this.villainPhase = this.villain.villain_phases[0];
     this.villainPhase['currentHP'] = this.villainPhase.health;
     this.currentScheme = this.villain.main_scheme[0].init;
-    this.villainPhase.currentHP = this.villainPhase.maxHP = (this.villainPhase.health * this.players);
+    this.villainPhase.currentHP = this.villainPhase.maxHP = (this.villainPhase.health * this.playersInput);
     this.shared.minions = this.villain.minions;
 
     this.setLifepointsUI();
@@ -82,7 +81,7 @@ export class VillainSelectorComponent implements OnInit {
 
   selectPhase(villainPhase: any) {
     this.villainPhase = villainPhase;
-    this.villainPhase.currentHP = this.villainPhase.maxHP = (villainPhase.health * this.players);
+    this.villainPhase.currentHP = this.villainPhase.maxHP = (villainPhase.health * this.playersInput);
     this.setLifepointsUI();
   }
 
@@ -91,7 +90,7 @@ export class VillainSelectorComponent implements OnInit {
       let plan = this.shared.planList.find((x: any) => x.code == planID);
 
       //Set initial scheme
-      let playersMultiplier = (!plan.base_threat_fixed) ? this.players : 1;
+      let playersMultiplier = (!plan.base_threat_fixed) ? this.playersInput : 1;
       plan['current'] = plan['end'] = (plan.base_threat * playersMultiplier);
 
       let indexInPlay = this.plansInPlay.findIndex((x: any) => x.code == planID);
@@ -182,7 +181,7 @@ export class VillainSelectorComponent implements OnInit {
     this.currentScheme = this.currentScheme - qty;
     if (this.currentScheme < 0) this.currentScheme = 0;
 
-    this.villain.main_scheme[this.schemePhase].toAdvance = this.accelToken + this.currentScheme + (this.villain.main_scheme[this.schemePhase].escalation_threat * this.players);
+    this.villain.main_scheme[this.schemePhase].toAdvance = this.accelToken + this.currentScheme + (this.villain.main_scheme[this.schemePhase].escalation_threat * this.playersInput);
 
     this.mainSchemeUI.forEach(row => {
       row.forEach(circles => {
@@ -248,8 +247,8 @@ export class VillainSelectorComponent implements OnInit {
 
       this.currentScheme = this.villain.main_scheme[index].base_threat;
 
-      this.villain.main_scheme[index].toAdvance = this.accelToken + this.currentScheme + (this.villain.main_scheme[index].escalation_threat * this.players);
-      this.villain.main_scheme[index].maxEnd = this.villain.main_scheme[index].threat * this.players;
+      this.villain.main_scheme[index].toAdvance = this.accelToken + this.currentScheme + (this.villain.main_scheme[index].escalation_threat * this.playersInput);
+      this.villain.main_scheme[index].maxEnd = this.villain.main_scheme[index].threat * this.playersInput;
       for (let i = 1; i <= this.villain.main_scheme[index].maxEnd; i++) {
         if (rows[rowIndex] == undefined) rows[rowIndex] = [];
         rows[rowIndex].push({ state: false, index: i });

@@ -1,6 +1,11 @@
 <ng-container *ngIf="!shared.settingsReady">
-    <h5 class="normalText">Select Players</h5>
-    <dx-select-box [items]="playersOptions" displayExpr="text" valueExpr="text"
+    <dx-select-box 
+        [items]="playersOptions" 
+        displayExpr="text" 
+        valueExpr="text"
+        [labelMode]="'static'"
+        [stylingMode]="'outlined'"
+        label="Select Players"
         (onValueChanged)="selectPlayers($event.value)"></dx-select-box>
 </ng-container>
 <ng-container *ngIf="playersInput > 2">
@@ -15,9 +20,16 @@
     <div class="col" *ngFor="let item of  [].constructor(playersInput); index as i">
         <!-- Hero Select -->
         <ng-container *ngIf="!shared.settingsReady">
-            <h5 class="normalText">Select Hero</h5>
-            <dx-select-box [items]="shared.heroes" displayExpr="text" valueExpr="card_set_code" [searchEnabled]="true"
-                [searchMode]="'contains'" (onValueChanged)="selectHero($event.value, i)"></dx-select-box>
+            <dx-select-box 
+                [items]="shared.heroes" 
+                displayExpr="text" 
+                valueExpr="card_set_code" 
+                [searchEnabled]="true"
+                [searchMode]="'contains'" 
+                [labelMode]="'static'"
+                [stylingMode]="'outlined'"
+                label="Select Hero"
+                (onValueChanged)="selectHero($event.value, i)"></dx-select-box>
         </ng-container>
         <!-- Hero Details -->
         <ng-container *ngIf="players[i]">
@@ -76,6 +88,9 @@
                     [showSelectionControls]="true" 
                     tagTemplate="customTag"
                     [hideSelectedItems]="true"
+
+                    [labelMode]="'static'" 
+                    label="Put Minion on Play"                    
                     (onValueChanged)="putAllyInPlay($event, i)">
                     <div *dxTemplate="let product of 'customTag'">
                         <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">

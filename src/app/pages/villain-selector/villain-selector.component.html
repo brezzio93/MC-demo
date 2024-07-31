@@ -1,13 +1,15 @@
 <!-- Set Villain -->
  <ng-container *ngIf="shared.villains.length > 0">
     <ng-container  *ngIf="!shared.settingsReady">
-        <h5 class="normalText">Select Encounter</h5>
         <dx-select-box
             [items]="shared.villains"
             displayExpr="text"
             valueExpr="card_set_code"
             [searchEnabled]="true"
             [searchMode]="'contains'"
+            [labelMode]="'static'"
+            [stylingMode]="'outlined'"
+            label="Select Encounter"            
             (onValueChanged)="selectVillain($event.value)">
         </dx-select-box> 
     </ng-container>

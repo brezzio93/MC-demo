@@ -1,15 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SingleCardModule } from './layouts';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-unauthenticated-content',
   template: `
-    <app-single-card [title]="title" [description]="description">
-      <router-outlet></router-outlet>
-    </app-single-card>
   `,
   styles: [`
     :host {
@@ -45,7 +41,6 @@ export class UnauthenticatedContentComponent {
   imports: [
     CommonModule,
     RouterModule,
-    SingleCardModule,
   ],
   declarations: [UnauthenticatedContentComponent],
   exports: [UnauthenticatedContentComponent]

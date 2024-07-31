@@ -8,7 +8,8 @@ import { AuthService, ScreenService, AppInfoService } from './shared/services';
 })
 export class AppComponent  {
   @HostBinding('class') get getClass() {
-    return Object.keys(this.screen.sizes).filter(cl => this.screen.sizes[cl]).join(' ');
+    // return Object.keys(this.screen.sizes).filter(cl => this.screen.sizes[cl]).join(' ');
+    return 'screen-large';
   }
 
   constructor(private authService: AuthService, private screen: ScreenService, public appInfo: AppInfoService) { }

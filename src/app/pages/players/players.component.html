@@ -56,8 +56,7 @@
                     </table>
                 </div>
                 <!-- Ally Selector -->
-                <!-- <h5 class="heroName">Put ally on Play</h5>
-                <dx-tag-box
+                <!-- <dx-tag-box
                     [dataSource]="players[i].alliesDropdown"
                     displayExpr="name"
                     valueExpr="code"
@@ -68,6 +67,8 @@
                     [showSelectionControls]="true" 
                     tagTemplate="customTag"
                     [hideSelectedItems]="true"
+                    [labelMode]="'static'" 
+                    label="Put ally on Play"
                     (onValueChanged)="putAllyInPlay($event, i)">
                     <div *dxTemplate="let product of 'customTag'">
                         <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
@@ -76,7 +77,6 @@
                     </div>
                 </dx-tag-box> -->
                 <!-- Minions Selector -->
-                <h5 class="heroName">Put Minion on Play</h5>
                 <dx-tag-box
                     [dataSource]="shared.minions"
                     displayExpr="name"
@@ -88,10 +88,9 @@
                     [showSelectionControls]="true" 
                     tagTemplate="customTag"
                     [hideSelectedItems]="true"
-
                     [labelMode]="'static'" 
-                    label="Put Minion on Play"                    
-                    (onValueChanged)="putAllyInPlay($event, i)">
+                    label="Put Minion on Play"
+                    (onValueChanged)="putMinionInPlay($event, i)">
                     <div *dxTemplate="let product of 'customTag'">
                         <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
                         <span>{{product.name}}</span>

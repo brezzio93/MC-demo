@@ -6,9 +6,7 @@ export class ScreenService {
   @Output() changed = new EventEmitter();
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large])
-      .subscribe(() => this.changed.next(true));
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large]).subscribe(() => this.changed.next(true));
   }
 
   private isLargeScreen() {

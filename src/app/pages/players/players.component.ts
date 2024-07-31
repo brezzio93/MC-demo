@@ -38,9 +38,10 @@ export class PlayersComponent {
     let hero = this.shared.heroes.find((x: any) => x.card_set_code == hero_card_set_code)
     hero.currentHP = hero.maxHP = hero.health;
     hero.alliesDropdown = [];
-    hero.allies.forEach((ally: any) => {
-      hero.alliesDropdown.push(ally);
-    });
+    if (hero.allies)
+      hero?.allies.forEach((ally: any) => {
+        hero.alliesDropdown.push(ally);
+      });
     this.shared.allies.forEach((ally: any) => {
       hero.alliesDropdown.push(ally);
     });
@@ -68,6 +69,10 @@ export class PlayersComponent {
   }
 
   putAllyInPlay(e: any, heroIndex: any) {
+
+  }
+
+  putMinionInPlay(e: any, heroIndex: any) {
 
   }
 

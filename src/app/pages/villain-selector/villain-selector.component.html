@@ -9,7 +9,7 @@
             [searchMode]="'contains'"
             [labelMode]="'static'"
             [stylingMode]="'outlined'"
-            label="Select Encounter"            
+            label="Select Encounter"
             (onValueChanged)="selectVillain($event.value)">
         </dx-select-box> 
     </ng-container>
@@ -107,7 +107,6 @@
                 <div class="col-3">
                     <!-- Set Modular Sets -->
                     <div *ngIf="!shared.settingsReady">
-                        <h5 class="normalText">Select Modular Sets</h5>
                         <dx-tag-box
                             [dataSource]="shared.modularSets"
                             valueExpr="card_set_code"
@@ -115,12 +114,15 @@
                             applyValueMode="useButtons"
                             [multiline]="true"
                             [searchEnabled]="true"
-                            [showSelectionControls]="true" 
+                            [showSelectionControls]="true"
+                            [labelMode]="'static'"
+                            [stylingMode]="'outlined'"
+                            label="Select Modular Sets"
                             (onValueChanged)="selectScheme($event)">
                         </dx-tag-box>
                     </div>
+
                     <!-- Put scheme on play -->
-                    <h5 class="normalText">Put scheme on Play</h5>
                     <dx-tag-box
                         [dataSource]="shared.planList"
                         displayExpr="name"
@@ -132,6 +134,9 @@
                         [showSelectionControls]="true" 
                         tagTemplate="customTag"
                         [hideSelectedItems]="true"
+                        [labelMode]="'static'"
+                        [stylingMode]="'outlined'"
+                        label="Put scheme on Play"
                         (onValueChanged)="putSideSchemeInPlay($event)">
                         <div *dxTemplate="let product of 'customTag'">
                             <div [ngClass]="{ 'dx-tag-content': true, 'disabled-tag': true}">
